@@ -147,3 +147,9 @@ describe("DELETE /todos/:id", () => {
       .end(done)
   })
 })
+
+describe("PATH /todos/:id", () => {
+  it("should patch todo with given id", done => {
+    
+  })
+})
