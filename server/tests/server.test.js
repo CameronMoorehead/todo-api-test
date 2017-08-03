@@ -4,6 +4,7 @@ const { ObjectID } = require("mongodb")
 
 const { app } = require("./../server")
 const { Todo } = require("./../models/todo")
+const { User } = require("./../models/user")
 
 const todos = [
   {
@@ -19,6 +20,16 @@ const todos = [
     completedAt: 333
   }
 ]
+
+// const users = [
+//   {
+//     _id: new ObjectID(),
+//
+//   },
+//   {
+//     _id: new ObjectID()
+//   }
+// ]
 
 beforeEach(done => {
   Todo.remove({})
@@ -186,6 +197,38 @@ describe("PATH /todos/:id", () => {
           .then(todo => {
             expect(todo.completed).toBe(completed)
             expect(todo.completedAt).toNotExist()
+            done()
+          })
+          .catch(err => done(err))
+      })
+  })
+})
+
+describe("POST /users", () => {
+  it("should create a new user user", done => {
+    const user = {
+      email: "admin@example.com",
+      password: "password"
+    }
+
+    request(app)
+      .post(`/users`)
+      .send({
+        email: user.email,
+        password: user.password
+      })
+      .expect(200)
+      .expect(res => {
+        expect(res.body.email).toBe(user.email)
+        expect(res.body.password).toBe(user.password)
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+
+        User.find({ email: user.email })
+          .then(users => {
+            expect(users.length).toBe(1)
+            expect(users[0].email).toBe(user.email)
             done()
           })
           .catch(err => done(err))
